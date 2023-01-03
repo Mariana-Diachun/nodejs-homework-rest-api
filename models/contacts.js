@@ -6,8 +6,7 @@ const dbPath = path.resolve(__dirname, "./contacts.json");
 
 async function readDb() {
   const dbRaw = await fs.readFile(dbPath);
-  const db = JSON.parse(dbRaw);
-  return db;
+  return JSON.parse(dbRaw);
 }
 
 async function writeDb(db) {

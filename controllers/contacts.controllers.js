@@ -2,12 +2,12 @@ const db = require("../models/contacts");
 
 const { HttpError } = require("../helpers/index");
 
-async function getContacts(req, res) {
+async function getContactsService(req, res) {
   const contacts = await db.listContacts();
   res.json(contacts);
 }
 
-async function getContactById(req, res, next) {
+async function getContactService(req, res, next) {
   const { contactId } = req.params;
   const contact = await db.getContactById(contactId);
 
@@ -18,18 +18,18 @@ async function getContactById(req, res, next) {
   return res.json(contact);
 }
 
-async function createContact(req, res, next) {
+async function createContactService(req, res, next) {
   const { name, email, phone } = req.body;
   const newContact = await db.addContact(name, email, phone);
 
-  if (!name || !email || !phone) {
+  if (!newContact) {
     return next(HttpError(400, "missing required name field"));
   }
 
   res.status(201).json(newContact);
 }
 
-async function deleteContact(req, res, next) {
+async function deleteContactService(req, res, next) {
   const { contactId } = req.params;
   const contact = await db.getContactById(contactId);
 
@@ -41,7 +41,7 @@ async function deleteContact(req, res, next) {
   return res.status(200).json({ message: "Contact deleted" });
 }
 
-async function updateContact(req, res, next) {
+async function updateContactService(req, res, next) {
   if (!Object.keys(req.body).length) {
     return next(HttpError(400, "Missing fields"));
   }
@@ -57,9 +57,9 @@ async function updateContact(req, res, next) {
 }
 
 module.exports = {
-  getContacts,
-  updateContact,
-  deleteContact,
-  createContact,
-  getContactById,
+  updateContactService,
+  deleteContactService,
+  createContactService,
+  getContactService,
+  getContactsService,
 };

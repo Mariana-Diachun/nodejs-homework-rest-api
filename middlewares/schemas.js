@@ -1,16 +1,7 @@
 const Joi = require("joi");
 
 const addContactSchema = Joi.object({
-  name: Joi.string()
-    .min(3)
-    .required()
-    .pattern(
-      /^[a-zA-Zа-яА-Я]+(([' -][a-zA-Zа-яА-Я ])?[a-zA-Zа-яА-Я]*)*$/,
-      "For example Jacob Mercer!"
-    )
-    .messages({
-      "any.required": "You should provide name",
-    }),
+  name: Joi.string().alphanum().min(3).required(),
   phone: Joi.string()
     .min(10)
     .max(15)
@@ -23,6 +14,7 @@ const addContactSchema = Joi.object({
       "any.required": "You should provide phone number",
     }),
   email: Joi.string()
+    .required()
     .messages({
       "any.required": "You should provide email",
     })
@@ -33,15 +25,9 @@ const addContactSchema = Joi.object({
 });
 
 const updateContactSchema = Joi.object({
-  name: Joi.string()
-    .min(3)
-    .pattern(
-      /^[a-zA-Zа-яА-Я]+(([' -][a-zA-Zа-яА-Я ])?[a-zA-Zа-яА-Я]*)*$/,
-      "For example Jacob Mercer!"
-    )
-    .messages({
-      "any.required": "You should provide name",
-    }),
+  name: Joi.string().alphanum().min(3).messages({
+    "any.required": "You should provide name",
+  }),
   phone: Joi.string()
     .max(15)
     .pattern(
