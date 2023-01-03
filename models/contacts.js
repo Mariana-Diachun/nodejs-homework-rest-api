@@ -10,7 +10,7 @@ async function readDb() {
   return db;
 }
 
-async function writDb(db) {
+async function writeDb(db) {
   await fs.writeFile(dbPath, JSON.stringify(db, null, 2));
 }
 
@@ -28,7 +28,7 @@ async function getContactById(contactId) {
 async function removeContact(contactId) {
   const db = await readDb();
   const updatedDb = db.filter((contact) => contact.id !== contactId);
-  await writDb(updatedDb);
+  await writeDb(updatedDb);
 }
 
 async function addContact(name, email, phone) {
@@ -36,18 +36,21 @@ async function addContact(name, email, phone) {
   const contact = { id, name, email, phone };
   const db = await readDb();
   db.push(contact);
-  await writDb(db);
+  await writeDb(db);
   return contact;
 }
 
-async function updateContact(contactId, name, email, phone) {
-  const updatedContact = { contactId, name, email, phone };
+async function updateContact(contactId, body) {
   const db = await readDb();
-  if (!db.include(updatedContact)) {
-    const updatedDb = db.push(updatedContact);
-    return updatedDb;
+  const contact = db.find((contact) => contact.id === contactId);
+  if (!contact) {
+    return null;
   }
-  return db;
+  const updatedContact = { ...contact, ...body };
+  const index = db.findIndex((el) => el.id === contactId);
+  db.splice(index, 1, updatedContact);
+  await writeDb(db);
+  return updatedContact;
 }
 
 module.exports = {
