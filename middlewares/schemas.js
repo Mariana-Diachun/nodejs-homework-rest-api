@@ -1,7 +1,9 @@
 const Joi = require("joi");
 
 const addContactSchema = Joi.object({
-  name: Joi.string().alphanum().min(3).required(),
+  name: Joi.string().min(3).required().messages({
+    "any.required": "You should provide name",
+  }),
   phone: Joi.string()
     .min(10)
     .max(15)
