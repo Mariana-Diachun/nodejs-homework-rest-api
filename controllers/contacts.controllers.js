@@ -25,7 +25,6 @@ async function createContactService(req, res, next) {
     res.status(201).json(newContact);
   } catch (error) {
     console.log(error);
-    return next(new HttpError(400, "Missing fields required"));
   }
 }
 
@@ -55,7 +54,6 @@ async function updateContactService(req, res, next) {
         new: true,
       }
     );
-    console.log(updatedContact);
     return res.status(200).json(updatedContact);
   } catch (error) {
     return next(new HttpError(404, "Contact not found"));
