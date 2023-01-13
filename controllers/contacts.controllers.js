@@ -9,20 +9,24 @@ async function getContactsService(req, res) {
 
 async function getContactService(req, res, next) {
   const { contactId } = req.params;
-  const contact = await Contact.findById(contactId);
-
-  if (!contact) {
+  try {
+    const contact = await Contact.findById(contactId);
+    return res.json(contact);
+  } catch (error) {
     return next(new HttpError(404, "Contact is not found!"));
   }
-
-  return res.json(contact);
 }
 
 async function createContactService(req, res, next) {
   const { name, email, phone, favorite } = req.body;
-  const newContact = await Contact.create({ name, email, phone, favorite });
-
-  res.status(201).json(newContact);
+  try {
+    const newContact = await Contact.create({ name, email, phone, favorite });
+    console.log(newContact);
+    res.status(201).json(newContact);
+  } catch (error) {
+    console.log(error);
+    return next(new HttpError(400, "Missing fields required"));
+  }
 }
 
 async function deleteContactService(req, res, next) {
@@ -30,7 +34,7 @@ async function deleteContactService(req, res, next) {
   const contact = await Contact.findById(contactId);
 
   if (!contact) {
-    return next(new HttpError(404, "No found"));
+    return next(new HttpError(404, "Not found"));
   }
 
   await Contact.findByIdAndRemove(contactId);
@@ -43,31 +47,44 @@ async function updateContactService(req, res, next) {
   }
 
   const { contactId } = req.params;
-  const updatedContact = await Contact.findOneAndUpdate(contactId, {});
-
-  if (!updatedContact) {
+  try {
+    const updatedContact = await Contact.findByIdAndUpdate(
+      contactId,
+      req.body,
+      {
+        new: true,
+      }
+    );
+    console.log(updatedContact);
+    return res.status(200).json(updatedContact);
+  } catch (error) {
     return next(new HttpError(404, "Contact not found"));
   }
-
-  return res.status(200).json(updatedContact);
 }
 
 async function updateStatusContactService(req, res, next) {
   const keys = Object.keys(req.body);
-  const contactWithUpdField = keys.filter((value) => value === "favorite");
+  const contactWithUpdField = keys.find((value) => value === "favorite");
 
   if (!contactWithUpdField) {
     return next(new HttpError(400, "Missing fields favorite"));
   }
-  const { contactId } = req.params;
-  const updatedContact = await Contact.findByIdAndUpdate(contactId, {});
 
-  if (!updatedContact) {
+  const { contactId } = req.params;
+  try {
+    const updatedContact = await Contact.findByIdAndUpdate(
+      contactId,
+      req.body,
+      {
+        new: true,
+      }
+    );
+    return res.status(200).json(updatedContact);
+  } catch (error) {
     return next(new HttpError(404, "Not found"));
   }
-
-  return res.status(200).json(updatedContact);
 }
+
 module.exports = {
   updateContactService,
   deleteContactService,

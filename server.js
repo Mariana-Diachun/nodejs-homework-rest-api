@@ -9,7 +9,7 @@ mongoose.set("strictQuery", false);
 const { HOST_URI } = process.env;
 const PORT = process.env.PORT || 3000;
 
-async function main() {
+(async function main() {
   try {
     await mongoose.connect(HOST_URI);
     console.log("Database connection successful");
@@ -18,8 +18,6 @@ async function main() {
     });
   } catch (error) {
     console.error(error.message);
+    process.exit(1);
   }
-  process.exit(1);
-}
-
-main();
+})();

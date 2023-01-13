@@ -24,6 +24,7 @@ const addContactSchema = Joi.object({
       minDomainSegments: 2,
       tlds: { allow: ["com"] },
     }),
+  favorite: Joi.boolean().default(false),
 });
 
 const updateContactSchema = Joi.object({
