@@ -1,71 +1,66 @@
-const { Contact } = require("../models/contacts");
+const contactsService = require("../services/contactsService");
 
 const HttpError = require("../helpers/HttpError");
 
-async function getContactsService(req, res) {
-  const contacts = await Contact.find({});
-
-  res.json(contacts);
+async function getContacts(req, res, next) {
+  try {
+    const contacts = await contactsService.getContacts();
+    return res.json(contacts);
+  } catch (error) {
+    return next(new HttpError(400, error.message));
+  }
 }
 
-async function getContactService(req, res, next) {
+async function getContact(req, res, next) {
   const { contactId } = req.params;
 
   try {
-    const contact = await Contact.findById(contactId);
+    const contact = await contactsService.getContact(contactId);
     return res.json(contact);
   } catch (error) {
     return next(new HttpError(404, "Contact is not found!"));
   }
 }
 
-async function createContactService(req, res, next) {
+async function createContact(req, res, next) {
   const { name, email, phone, favorite } = req.body;
   try {
-    const newContact = await Contact.create({ name, email, phone, favorite });
-    console.log(newContact);
-    res.status(201).json(newContact);
+    const newContact = await contactsService.createContact({
+      name,
+      email,
+      phone,
+      favorite,
+    });
+    return res.status(201).json(newContact);
   } catch (error) {
-    console.log(error);
+    return next(new HttpError(400, "Missing fields"));
   }
 }
 
-async function deleteContactService(req, res, next) {
+async function deleteContact(req, res, next) {
   const { contactId } = req.params;
-
-  const contact = await Contact.findById(contactId);
-
-  if (!contact) {
+  try {
+    await contactsService.deleteContact(contactId);
+    return res.status(200).json({ message: "Contact deleted" });
+  } catch (error) {
     return next(new HttpError(404, "Not found"));
   }
-
-  await Contact.findByIdAndRemove(contactId);
-
-  return res.status(200).json({ message: "Contact deleted" });
 }
 
-async function updateContactService(req, res, next) {
+async function updateContact(req, res, next) {
+  const { contactId } = req.params;
   if (!Object.keys(req.body).length) {
     return next(new HttpError(400, "Missing fields"));
   }
-
-  const { contactId } = req.params;
-
   try {
-    const updatedContact = await Contact.findByIdAndUpdate(
-      contactId,
-      req.body,
-      {
-        new: true,
-      }
-    );
+    const updatedContact = contactsService.updateContact(contactId, req.body);
     return res.status(200).json(updatedContact);
   } catch (error) {
     return next(new HttpError(404, "Contact not found"));
   }
 }
 
-async function updateStatusContactService(req, res, next) {
+async function updateStatusContact(req, res, next) {
   const keys = Object.keys(req.body);
   const contactWithUpdField = keys.find((value) => value === "favorite");
 
@@ -75,7 +70,7 @@ async function updateStatusContactService(req, res, next) {
 
   const { contactId } = req.params;
   try {
-    const updatedContact = await Contact.findByIdAndUpdate(
+    const updatedContact = await contactsService.updateContact(
       contactId,
       req.body,
       {
@@ -89,10 +84,10 @@ async function updateStatusContactService(req, res, next) {
 }
 
 module.exports = {
-  updateContactService,
-  deleteContactService,
-  updateStatusContactService,
-  createContactService,
-  getContactService,
-  getContactsService,
+  updateContact,
+  deleteContact,
+  updateStatusContact,
+  createContact,
+  getContact,
+  getContacts,
 };
