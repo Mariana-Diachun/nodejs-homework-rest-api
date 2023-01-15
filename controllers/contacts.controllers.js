@@ -4,11 +4,13 @@ const HttpError = require("../helpers/HttpError");
 
 async function getContactsService(req, res) {
   const contacts = await Contact.find({});
+
   res.json(contacts);
 }
 
 async function getContactService(req, res, next) {
   const { contactId } = req.params;
+
   try {
     const contact = await Contact.findById(contactId);
     return res.json(contact);
@@ -30,6 +32,7 @@ async function createContactService(req, res, next) {
 
 async function deleteContactService(req, res, next) {
   const { contactId } = req.params;
+
   const contact = await Contact.findById(contactId);
 
   if (!contact) {
@@ -37,6 +40,7 @@ async function deleteContactService(req, res, next) {
   }
 
   await Contact.findByIdAndRemove(contactId);
+
   return res.status(200).json({ message: "Contact deleted" });
 }
 
@@ -46,6 +50,7 @@ async function updateContactService(req, res, next) {
   }
 
   const { contactId } = req.params;
+
   try {
     const updatedContact = await Contact.findByIdAndUpdate(
       contactId,

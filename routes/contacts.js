@@ -8,6 +8,7 @@ const {
   getContactsService,
   updateStatusContactService,
 } = require("../controllers/contacts.controllers");
+
 const { validateBody } = require("../middlewares/index");
 const {
   addContactSchema,
@@ -38,5 +39,6 @@ router.patch(
   "/:contactId/favorite",
   tryCatchWrapper(updateStatusContactService)
 );
+
 
 module.exports = router;
