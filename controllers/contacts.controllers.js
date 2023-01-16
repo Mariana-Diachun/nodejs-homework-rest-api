@@ -48,12 +48,18 @@ async function deleteContact(req, res, next) {
 }
 
 async function updateContact(req, res, next) {
-  const { contactId } = req.params;
   if (!Object.keys(req.body).length) {
     return next(new HttpError(400, "Missing fields"));
   }
+  const { contactId } = req.params;
   try {
-    const updatedContact = contactsService.updateContact(contactId, req.body);
+    const updatedContact = await contactsService.updateContact(
+      contactId,
+      req.body,
+      {
+        new: true,
+      }
+    );
     return res.status(200).json(updatedContact);
   } catch (error) {
     return next(new HttpError(404, "Contact not found"));
