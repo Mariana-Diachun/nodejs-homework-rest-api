@@ -1,11 +1,16 @@
 const contactsService = require("../services/contactsService");
+// const { Contact } = require("../models/contacts");
 
 const HttpError = require("../helpers/HttpError");
 
 async function getContacts(req, res, next) {
   try {
-    const contacts = await contactsService.getContacts();
-    return res.json(contacts);
+    const { limit = 20, page = 1, favorite } = req.query;
+
+    const skip = (page - 1) * limit;
+    const contacts = await contactsService.getContacts(skip, limit, favorite);
+
+    res.json(contacts);
   } catch (error) {
     return next(new HttpError(400, error.message));
   }
@@ -23,13 +28,15 @@ async function getContact(req, res, next) {
 }
 
 async function createContact(req, res, next) {
-  const { name, email, phone, favorite } = req.body;
+  const { name, email, phone, favorite, owner } = req.body;
+
   try {
     const newContact = await contactsService.createContact({
       name,
       email,
       phone,
       favorite,
+      owner,
     });
     return res.status(201).json(newContact);
   } catch (error) {

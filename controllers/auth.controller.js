@@ -7,7 +7,7 @@ const { JWT_SECRET } = process.env;
 const HttpError = require("../helpers/HttpError");
 
 async function register(req, res, next) {
-  const { email, password, subscription } = req.body;
+  const { email, password } = req.body;
 
   const salt = await bcrypt.genSalt();
   const hashedPassword = await bcrypt.hash(password, salt);
@@ -15,7 +15,6 @@ async function register(req, res, next) {
     const newUser = await userService.createUser({
       email,
       password: hashedPassword,
-      subscription,
     });
     return res.status(201).json(newUser);
   } catch (error) {
@@ -25,24 +24,38 @@ async function register(req, res, next) {
 
 async function login(req, res, next) {
   const { password, email } = req.body;
-  const storedUser = await userService.findUser({
+
+  const isUserValid = await userService.findUser({
     email,
   });
 
-  const isPasswordValid = await bcrypt.compare(password, storedUser.password);
-
-  if (!isPasswordValid || !storedUser) {
+  if (!isUserValid) {
     throw new HttpError(401, "Email or password is wrong");
   }
 
-  const payload = { id: storedUser._id };
+  const isPasswordValid = await bcrypt.compare(password, isUserValid.password);
+
+  if (!isPasswordValid) {
+    throw new HttpError(401, "Email or password is wrong");
+  }
+
+  const payload = { id: isUserValid._id };
+
   const token = jwt.sign(payload, JWT_SECRET, {
     expiresIn: "1h",
   });
-  console.log(token);
+
+  const updatedUser = await userService.findAndUpdate(
+    isUserValid._id,
+    { token: token },
+    { new: true }
+  );
+
   res.json({
-    data: {
-      token,
+    token: updatedUser.token,
+    user: {
+      email: isUserValid.email,
+      subscription: isUserValid.subscription,
     },
   });
 }

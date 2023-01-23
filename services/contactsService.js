@@ -1,7 +1,14 @@
 const { Contact } = require("../models/contacts");
 
-async function getContacts() {
-  return await Contact.find({});
+async function getContacts(skip, limit, favorite) {
+  const queryParams = {};
+  if (favorite) {
+    queryParams.favorite = favorite;
+  }
+  return await Contact.find(queryParams)
+    .skip(skip)
+    .limit(limit)
+    .populate("owner");
 }
 
 async function getContact(contactId) {
@@ -9,8 +16,8 @@ async function getContact(contactId) {
 }
 
 async function createContact(userData) {
-  const { name, email, phone, favorite } = userData;
-  return await Contact.create({ name, email, phone, favorite });
+  const { name, email, phone, favorite, owner } = userData;
+  return await Contact.create({ name, email, phone, favorite, owner });
 }
 
 async function deleteContact(contactId) {

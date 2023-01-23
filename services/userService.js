@@ -8,4 +8,11 @@ async function createUser(userData) {
 async function findUser(email) {
   return await User.findOne(email);
 }
-module.exports = { createUser, findUser };
+
+async function findAndUpdate(userId, userData) {
+  return await User.findByIdAndUpdate(userId, userData, {
+    new: true,
+  });
+}
+
+module.exports = { createUser, findUser, findAndUpdate };

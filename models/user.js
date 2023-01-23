@@ -16,13 +16,10 @@ const schema = mongoose.Schema(
       enum: ["starter", "pro", "business"],
       default: "starter",
     },
-    contacts: [
-      {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "contact",
-      },
-    ],
-    token: String,
+    token: {
+      type: String,
+      default: null,
+    },
   },
   {
     versionKey: false,

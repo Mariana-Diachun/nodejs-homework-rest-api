@@ -16,16 +16,17 @@ function validateBody(schema) {
 
 async function auth(req, res, next) {
   const authHeaders = req.headers.authorization || "";
-  const [type, token] = authHeaders.split(" ");
 
+  const [type, token] = authHeaders.split(" ");
   if (type !== "Bearer" || !token) {
     throw new HttpError(401, "Not authorized");
   }
 
   try {
     const { id } = jwt.verify(token, process.env.JWT_SECRET);
+
     const user = await User.findById(id);
-    console.log("user", user);
+
     req.user = user;
   } catch (error) {
     if (

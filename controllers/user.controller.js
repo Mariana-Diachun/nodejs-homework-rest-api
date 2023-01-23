@@ -1,36 +1,52 @@
+const HttpError = require("../helpers/HttpError");
 const { User } = require("../models/user");
 
-async function createContact(req, res, next) {
-  const { user } = req;
-  const { id: contactId } = req.body;
+async function current(req, res, next) {
+  const { _id } = req.user;
 
-  user.contacts.push(contactId);
-  await User.findByIdAndUpdate(user._id, user);
+  const user = await User.findById(_id);
 
-  return res.status(201).json({
-    data: { contacts: user.contacts },
+  if (!user || !user.token) return next(new HttpError(401, "Not authorized"));
+
+  res.json({
+    email: user.email,
+    subscription: user.subscription,
   });
 }
 
-async function getContacts(req, res, next) {
-  const { user } = req;
-  const userWithContacts = await User.findById(user._id).populate("contacts");
+async function logout(req, res, next) {
+  const { _id } = req.user;
 
-  return res
-    .status(200)
-    .json({ data: { contacts: userWithContacts.contacts } });
+  const user = await User.findById(_id);
+
+  if (!user || !user.token) return next(new HttpError(401, "Not authorized"));
+
+  await User.findByIdAndUpdate(_id, { $set: { token: null } });
+
+  return res.status(204).json();
 }
 
-async function current(req, res, next) {
-  const { user } = req;
-  const { email, _id: id } = user;
-  return res.status(201).json({
-    data: { user: { email, id } },
+async function updateSubscription(req, res, next) {
+  const { _id } = req.user;
+  const { subscription } = req.body;
+  const user = await User.findById(_id);
+
+  if (!user || !user.token) return next(new HttpError(401, "Not authorized"));
+
+  const updatedUser = await User.findByIdAndUpdate(
+    _id,
+    { subscription: subscription },
+    { new: true }
+  );
+
+  res.json({
+    email: user.email,
+    subscription: updatedUser.subscription,
   });
 }
 
 module.exports = {
-  createContact,
-  getContacts,
   current,
+  logout,
+  updateSubscription,
 };

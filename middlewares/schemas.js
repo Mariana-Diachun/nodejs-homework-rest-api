@@ -25,6 +25,7 @@ const addContactSchema = Joi.object({
       tlds: { allow: ["com"] },
     }),
   favorite: Joi.boolean().default(false),
+  owner: Joi.string(),
 });
 
 const updateContactSchema = Joi.object({
@@ -87,7 +88,9 @@ const addUserSchema = Joi.object({
     .regex(strongPasswordRegex)
     .error(stringPassswordError)
     .required(),
-  subscription: Joi.string().valid("starter", "pro", "business"),
+  subscription: Joi.string()
+    .valid("starter", "pro", "business")
+    .default("starter"),
 });
 
 const findUserSchema = Joi.object({
@@ -103,10 +106,15 @@ const findUserSchema = Joi.object({
     .required(),
 });
 
+const updateSubscriptionSchema = Joi.object({
+  subscription: Joi.string().valid("starter", "pro", "business").required(),
+});
+
 module.exports = {
   addContactSchema,
   updateContactSchema,
   updateStatusContactSchema,
   addUserSchema,
   findUserSchema,
+  updateSubscriptionSchema,
 };
