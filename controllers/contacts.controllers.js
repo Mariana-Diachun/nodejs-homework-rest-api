@@ -4,7 +4,7 @@ const HttpError = require("../helpers/HttpError");
 
 async function getContacts(req, res, next) {
   try {
-    const { limit = 20, page = 1, favorite } = req.query;
+    const { limit = 20, page = 1, favorite = [true, false] } = req.query;
 
     const skip = (page - 1) * limit;
     const contacts = await contactsService.getContacts(skip, limit, favorite);

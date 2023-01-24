@@ -27,6 +27,8 @@ async function auth(req, res, next) {
 
     const user = await User.findById(id);
 
+    if (!user) return next(new HttpError(404, "Not found"));
+
     req.user = user;
   } catch (error) {
     if (
