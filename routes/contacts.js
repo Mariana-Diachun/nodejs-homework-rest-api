@@ -16,30 +16,30 @@ const {
   updateStatusContactSchema,
 } = require("../middlewares/schemas");
 
-const router = express.Router();
+const contactsRouter = express.Router();
 
-router.get("/", tryCatchWrapper(getContacts));
+contactsRouter.get("/", tryCatchWrapper(getContacts));
 
-router.get("/:contactId", tryCatchWrapper(getContact));
+contactsRouter.get("/:contactId", tryCatchWrapper(getContact));
 
-router.post(
+contactsRouter.post(
   "/",
   validateBody(addContactSchema),
   tryCatchWrapper(createContact)
 );
 
-router.delete("/:contactId", tryCatchWrapper(deleteContact));
+contactsRouter.delete("/:contactId", tryCatchWrapper(deleteContact));
 
-router.put(
+contactsRouter.put(
   "/:contactId",
   validateBody(updateContactSchema),
   tryCatchWrapper(updateContact)
 );
 
-router.patch(
+contactsRouter.patch(
   "/:contactId/favorite",
   validateBody(updateStatusContactSchema),
   tryCatchWrapper(updateStatusContact)
 );
 
-module.exports = router;
+module.exports = { contactsRouter };
