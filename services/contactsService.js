@@ -5,6 +5,7 @@ async function getContacts(skip, limit, favorite) {
   if (favorite) {
     queryParams.favorite = favorite;
   }
+
   return await Contact.find(queryParams)
     .skip(skip)
     .limit(limit)
