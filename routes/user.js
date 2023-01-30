@@ -5,11 +5,12 @@ const {
   current,
   logout,
   updateSubscription,
+  uploadImageAvatar,
 } = require("../controllers/user.controller");
 
 const { updateSubscriptionSchema } = require("../middlewares/schemas");
 
-const { auth } = require("../middlewares/index");
+const { auth, upload } = require("../middlewares/index");
 
 const userRouter = express.Router();
 
@@ -22,6 +23,13 @@ userRouter.patch(
 );
 
 userRouter.post("/logout", tryCatchWrapper(auth), tryCatchWrapper(logout));
+
+userRouter.patch(
+  "/avatars",
+  tryCatchWrapper(auth),
+  upload.single("avatar"),
+  tryCatchWrapper(uploadImageAvatar)
+);
 
 module.exports = {
   userRouter,

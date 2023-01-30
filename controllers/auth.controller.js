@@ -1,5 +1,6 @@
 const userService = require("../services/userService");
 const bcrypt = require("bcrypt");
+const gravatar = require("gravatar");
 
 const jwt = require("jsonwebtoken");
 const { JWT_SECRET } = process.env;
@@ -12,9 +13,11 @@ async function register(req, res, next) {
   const salt = await bcrypt.genSalt();
   const hashedPassword = await bcrypt.hash(password, salt);
   try {
+    const avatarURL = gravatar.url(email);
     const newUser = await userService.createUser({
       email,
       password: hashedPassword,
+      avatarURL,
     });
     return res.status(201).json(newUser);
   } catch (error) {
