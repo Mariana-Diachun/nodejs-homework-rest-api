@@ -47,36 +47,9 @@ async function updateSubscription(req, res, next) {
   });
 }
 
-// async function uploadImageAvatar(req, res, next) {
-//   console.log("request====", req);
-//   const { avatar } = req;
-
-//   const tmpPath = path.resolve(__dirname, "../tmp", avatar);
-//   // console.log(tmpPath);
-
-//   const pablicPath = path.resolve(__dirname, "../public/avatars", avatar);
-//   // console.log(pablicPath);
-
-//   try {
-//     await fs.rename(tmpPath, pablicPath);
-//   } catch (error) {
-//     await fs.unlink(tmpPath);
-//     throw error;
-//   }
-//   const { _id } = req.user;
-//   const user = await User.findByIdAndUpdate(_id);
-//   if (!user || !user.token) return next(new HttpError(401, "Not authorized"));
-//   user.avatar = `/public/${avatar}`;
-//   await user.save();
-
-//   return res.json({
-//     avatarURL: user.avatar,
-//   });
-// }
 const avatarsDir = path.join(__dirname, "../../", "public", "avatars");
 
 const uploadImageAvatar = async (req, res) => {
-  // console.log(req.user);
   const { _id: id } = req.user;
 
   const { originalname, path: tempUpload } = req.file;
@@ -86,6 +59,7 @@ const uploadImageAvatar = async (req, res) => {
 
   await fs.rename(tempUpload, resultUpload);
   const avatarURL = path.join("avatars", fileName);
+  console.log(avatarURL);
 
   await User.findByIdAndUpdate(id, { avatarURL });
 
