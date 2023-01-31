@@ -1,4 +1,8 @@
-const userService = require("../services/userService");
+const {
+  createUser,
+  findUser,
+  findAndUpdate,
+} = require("../services/userService");
 const bcrypt = require("bcrypt");
 const gravatar = require("gravatar");
 
@@ -14,7 +18,7 @@ async function register(req, res, next) {
   const hashedPassword = await bcrypt.hash(password, salt);
   try {
     const avatarURL = gravatar.url(email);
-    const newUser = await userService.createUser({
+    const newUser = await createUser({
       email,
       password: hashedPassword,
       avatarURL,
@@ -28,7 +32,7 @@ async function register(req, res, next) {
 async function login(req, res, next) {
   const { password, email } = req.body;
 
-  const isUserValid = await userService.findUser({
+  const isUserValid = await findUser({
     email,
   });
 
@@ -48,7 +52,7 @@ async function login(req, res, next) {
     expiresIn: "1h",
   });
 
-  const updatedUser = await userService.findAndUpdate(
+  const updatedUser = await findAndUpdate(
     isUserValid._id,
     { token: token },
     { new: true }

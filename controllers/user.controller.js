@@ -46,8 +46,7 @@ async function updateSubscription(req, res, next) {
     subscription: updatedUser.subscription,
   });
 }
-
-const avatarsDir = path.join(__dirname, "../../", "public", "avatars");
+const avatarsDir = path.join(__dirname, "../", "public", "avatars");
 
 const uploadImageAvatar = async (req, res) => {
   const { _id: id } = req.user;
