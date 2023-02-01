@@ -1,5 +1,7 @@
 const HttpError = require("../helpers/HttpError");
 const { User } = require("../models/user");
+const path = require("path");
+const fs = require("fs/promises");
 
 async function current(req, res, next) {
   const { _id } = req.user;
@@ -44,9 +46,30 @@ async function updateSubscription(req, res, next) {
     subscription: updatedUser.subscription,
   });
 }
+const avatarsDir = path.join(__dirname, "../", "public", "avatars");
+
+const uploadImageAvatar = async (req, res) => {
+  const { _id: id } = req.user;
+
+  const { originalname, path: tempUpload } = req.file;
+  const [extension] = originalname.split(".").reverse();
+  const fileName = `${id}.${extension}`;
+  const resultUpload = path.join(avatarsDir, fileName);
+
+  await fs.rename(tempUpload, resultUpload);
+  const avatarURL = path.join("avatars", fileName);
+  console.log(avatarURL);
+
+  await User.findByIdAndUpdate(id, { avatarURL });
+
+  res.json({
+    avatarURL,
+  });
+};
 
 module.exports = {
   current,
   logout,
   updateSubscription,
+  uploadImageAvatar,
 };

@@ -1,5 +1,10 @@
-const userService = require("../services/userService");
+const {
+  createUser,
+  findUser,
+  findAndUpdate,
+} = require("../services/userService");
 const bcrypt = require("bcrypt");
+const gravatar = require("gravatar");
 
 const jwt = require("jsonwebtoken");
 const { JWT_SECRET } = process.env;
@@ -12,9 +17,11 @@ async function register(req, res, next) {
   const salt = await bcrypt.genSalt();
   const hashedPassword = await bcrypt.hash(password, salt);
   try {
-    const newUser = await userService.createUser({
+    const avatarURL = gravatar.url(email);
+    const newUser = await createUser({
       email,
       password: hashedPassword,
+      avatarURL,
     });
     return res.status(201).json(newUser);
   } catch (error) {
@@ -25,7 +32,7 @@ async function register(req, res, next) {
 async function login(req, res, next) {
   const { password, email } = req.body;
 
-  const isUserValid = await userService.findUser({
+  const isUserValid = await findUser({
     email,
   });
 
@@ -45,7 +52,7 @@ async function login(req, res, next) {
     expiresIn: "1h",
   });
 
-  const updatedUser = await userService.findAndUpdate(
+  const updatedUser = await findAndUpdate(
     isUserValid._id,
     { token: token },
     { new: true }
