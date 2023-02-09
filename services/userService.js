@@ -1,12 +1,20 @@
 const { User } = require("../models/user");
 
 async function createUser(userData) {
-  const { email, password, subscription } = userData;
-  return await User.create({ email, password, subscription });
+  const { email, password, subscription, avatarURL, verifyToken, verified } =
+    userData;
+  return await User.create({
+    email,
+    password,
+    subscription,
+    avatarURL,
+    verifyToken,
+    verified,
+  });
 }
 
-async function findUser(email) {
-  return await User.findOne(email);
+async function findUser({ email }) {
+  return await User.findOne({ email });
 }
 
 async function findAndUpdate(userId, userData) {
